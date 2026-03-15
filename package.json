@@ -1,7 +1,7 @@
 {
   "name": "notes-service",
   "version": "1.0.0",
-  "description": "",
+  "description": "notes service for do some notes",
   "homepage": "https://github.com/vitkovskiiy/notes-service#readme",
   "bugs": {
     "url": "https://github.com/vitkovskiiy/notes-service/issues"
@@ -10,12 +10,19 @@
     "type": "git",
     "url": "git+https://github.com/vitkovskiiy/notes-service.git"
   },
-  "license": "ISC",
-  "author": "",
+  "license": "MIT",
+  "author": "Vitkvoskiiy Ivan",
   "scripts": {
-    "start": "node server.js"
+    "start": "nodemon server.js"
   },
   "dependencies": {
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
     "nodemon": "^3.1.14"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.0.3",
+    "globals": "^17.4.0"
   }
 }
