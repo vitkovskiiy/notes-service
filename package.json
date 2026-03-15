@@ -1,0 +1,21 @@
+{
+  "name": "notes-service",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/vitkovskiiy/notes-service#readme",
+  "bugs": {
+    "url": "https://github.com/vitkovskiiy/notes-service/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vitkovskiiy/notes-service.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "nodemon": "^3.1.14"
+  }
+}
