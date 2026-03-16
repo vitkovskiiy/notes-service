@@ -1,0 +1,16 @@
+services:
+  postgres_db:
+    image: postgres:15-alpine 
+    container_name: mywebapp
+    restart: always
+    environment:
+      POSTGRES_USER: admin          
+      POSTGRES_PASSWORD: root        
+      POSTGRES_DB: task_traser_db          
+    ports:
+      - "5433:5432"                  
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
