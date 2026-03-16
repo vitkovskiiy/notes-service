@@ -2,3 +2,8 @@
 .env
 .package-lock.json
 /generated/prisma
+/.vscode
+
+/src/generated/prisma
+
+/src/generated/prisma
