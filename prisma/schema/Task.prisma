@@ -1,0 +1,6 @@
+model Task {
+  id        Int      @id @default(cuid())
+  createdAt DateTime @default(now())
+  title     String   @db.VarChar(255)
+  content   String   
+}
