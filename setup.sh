@@ -11,6 +11,9 @@ echo "Downloads packages..."
 apt-get update
 apt-get install -y nginx nodejs npm postgresql git
 
+sudo npm config set fetch-retry-mintimeout 20000
+sudo npm config set fetch-retry-maxtimeout 120000
+
 
 echo "Creating users..."
 
