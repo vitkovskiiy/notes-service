@@ -3,16 +3,22 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 router.get("/", async (req, res) => {
+  
   try {
+    const acceptHeader = req.headers.accept || '';
     const response = await prisma.task.findMany();
-    res.status(200).send(response);
+    if(acceptHeader.includes('text/html')){
+       const parsed = response.map(task =>`${task.title} (ID: ${task.id})`);
+       return res.status(200).send(`Your, tasks \n${parsed}`);
+    } else {
+       return res.status(200).send(response);
+    }
   } catch (e) {
     res.status(404).json({ message: e });
   }
 });
 
 router.post("/:id/done", async (req, res) => {
-
   try {
     const updateStatus = await prisma.task.update({
       where: { id: parseInt(req.params.id) },
@@ -20,7 +26,7 @@ router.post("/:id/done", async (req, res) => {
     });
     res.status(200).send(updateStatus);
   } catch (e) {
-    console.log(e);
+    res.status(404).json({ message: e})
   }
 });
 
@@ -34,7 +40,7 @@ router.post("/", async (req, res) => {
     });
     res.status(200).send(response);
   } catch (e) {
-    console.log(e);
+    res.status(404).json({ message: e})
   }
 });
 
