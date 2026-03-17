@@ -13,6 +13,7 @@ apt-get install -y nginx nodejs npm postgresql git
 
 sudo npm config set fetch-retry-mintimeout 20000
 sudo npm config set fetch-retry-maxtimeout 120000
+sudo npm config set registry http://registry.npmjs.org/
 
 
 echo "Creating users..."
