@@ -3,10 +3,15 @@ const app = express();
 require('dotenv').config();
 app.use(express.json()); 
 
+//import routes
 const notesRouter = require("../notes-service/src/routes/notes.router")
+const healthRouter = require("../notes-service/src/routes/health.router")
 
-app.use("/tasks",notesRouter)
+//config api routes
+app.use("/tasks", notesRouter)
+app.use("/health", healthRouter)
 
+//for start page
 app.get('/', (req, res) => {
   const acceptHeader = req.headers.accept || '';
     if (!acceptHeader.includes('text/html')) {
