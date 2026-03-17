@@ -7,6 +7,8 @@ app.use(express.json());
 const notesRouter = require("./src/routes/notes.router")
 const healthRouter = require("./src/routes/health.router")
 
+//variables 
+const port = process.env.PORT || 8000
 //config api routes
 app.use("/tasks", notesRouter)
 app.use("/health", healthRouter)
@@ -20,6 +22,6 @@ app.get('/', (req, res) => {
   res.sendFile(__dirname + '/frontend/api.html');
 })
 
-app.listen(process.env.PORT,()=> {
+app.listen(port,()=> {
     console.log("server is working")
 })
