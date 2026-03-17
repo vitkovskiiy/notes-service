@@ -9,19 +9,19 @@ echo "=== Start to config server ==="
 
 echo "Downloads packages..."
 apt-get update
-apt-get install -y nginx nodejs npm postgresql 
+apt-get install -y nginx nodejs npm postgresql git
 
 
 echo "Creating users..."
-#create users 
-useradd -m -s /bin/bash student
-useradd -m -s /bin/bash teacher
-useradd -m -s /bin/bash operator
 
-echo "student:12345678" | chpasswd
-echo "teacher:12345678" | chpasswd
-echo "operator:12345678" | chpasswd
+ENCRYPTED_PASS=$(openssl passwd -6 12345678)
+useradd -m -s /bin/bash -p "$ENCRYPTED_PASS" student
+useradd -m -s /bin/bash -p "$ENCRYPTED_PASS" teacher
+useradd -m -s /bin/bash -p "$ENCRYPTED_PASS" operator
 
+chage -d 0 student
+chage -d 0 teacher
+chage -d 0 operator
 
 echo "Create gradebook..."
 echo "3" > /home/student/gradebook
@@ -37,12 +37,11 @@ sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE mywebapp TO student_d
 echo "Налаштування директорії застосунку..."
 APP_DIR="/var/www/webapp"
 mkdir -p $APP_DIR
-
-cp -r ./src/* $APP_DIR/
+git clone "https://github.com/vitkovskiiy/task-tracker.git" /tmp/repo
+cp -r /tmp/repo/* $APP_DIR/
+rm -rf /tmp/repo
 cd $APP_DIR
 npm install
-
-
 chown -R student:student $APP_DIR
 
 echo "Налаштування systemd..."
