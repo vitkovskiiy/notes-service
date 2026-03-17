@@ -8,10 +8,10 @@ datasource db {
 }
 
 model Task {
-  id        String     @id @default(cuid())
+  id        Int        @id @default(autoincrement())
   createdAt DateTime   @default(now())
   title     String     @db.VarChar(255)
-  content   String
+  content   String?
   status    TaskStatus @default(TODO)
 }
 
