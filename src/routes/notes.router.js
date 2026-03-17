@@ -1,30 +1,41 @@
-const router = require("express").Router()
+const router = require("express").Router();
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
-router.get("/", async (req,res) => {
-    try{
+router.get("/", async (req, res) => {
+  try {
     const response = await prisma.task.findMany();
     res.status(200).send(response);
-    } catch(e){
-       res.status(404).json({message: e})
-    }
-})
+  } catch (e) {
+    res.status(404).json({ message: e });
+  }
+});
 
-router.post("/", async (req,res) => {
-    console.log(req.body)
-    const {titleTask, contentTask} = req.body
-    try{
+router.post("/:id/done", async (req, res) => {
+
+  try {
+    const updateStatus = await prisma.task.update({
+      where: { id: parseInt(req.params.id) },
+      data: { status: "DONE" },
+    });
+    res.status(200).send(updateStatus);
+  } catch (e) {
+    console.log(e);
+  }
+});
+
+router.post("/", async (req, res) => {
+  try {
     const response = await prisma.task.create({
-         data: {
-            title: titleTask,
-            content: contentTask,
-         }
+      data: {
+        title: req.body.titleTask,
+        content: req.body.contentTask,
+      },
     });
     res.status(200).send(response);
-    } catch(e){
-       console.log(e)
-    }
-})
+  } catch (e) {
+    console.log(e);
+  }
+});
 
 module.exports = router;
