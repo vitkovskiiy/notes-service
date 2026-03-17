@@ -7,32 +7,31 @@ fi
 
 echo "=== Start to config server ==="
 
-echo "Встановлення пакетів..."
+echo "Downloads packages..."
 apt-get update
-#download all dependencies
-apt-get install -y nginx nodejs npm postgresql
+apt-get install -y nginx nodejs npm postgresql 
 
 
-echo "Створення користувачів..."
+echo "Creating users..."
 #create users 
 useradd -m -s /bin/bash student
 useradd -m -s /bin/bash teacher
 useradd -m -s /bin/bash operator
 
-echo "student:student123" | chpasswd
-echo "teacher:teacher123" | chpasswd
-echo "operator:operator123" | chpasswd
+echo "student:12345678" | chpasswd
+echo "teacher:12345678" | chpasswd
+echo "operator:12345678" | chpasswd
 
 
-echo "Створення файлу gradebook..."
+echo "Create gradebook..."
 echo "3" > /home/student/gradebook
 chown student:student /home/student/gradebook
 chmod 644 /home/student/gradebook
 
 echo "Налаштування бази даних..."
-sudo -u postgres psql -c "CREATE DATABASE web_platform;"
+sudo -u postgres psql -c "CREATE DATABASE mywebapp;"
 sudo -u postgres psql -c "CREATE USER student_db WITH PASSWORD 'db_password';"
-sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE web_platform TO student_db;"
+sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE mywebapp TO student_db;"
 
 
 echo "Налаштування директорії застосунку..."
@@ -47,14 +46,14 @@ npm install
 chown -R student:student $APP_DIR
 
 echo "Налаштування systemd..."
-cat <<EOF > /etc/systemd/system/webapp.service
+cat <<EOF > /etc/systemd/system/mywebapp.service
 [Unit]
-Description=My Express Web App
+Description=MyWebApp
 After=network.target
 
 [Service]
 Environment=NODE_ENV=production
-Environment=PORT=3000
+Environment=PORT=8000
 Type=simple
 User=student
 WorkingDirectory=$APP_DIR
@@ -66,12 +65,12 @@ WantedBy=multi-user.target
 EOF
 
 systemctl daemon-reload
-systemctl enable webapp.service
-systemctl start webapp.service
+systemctl enable mywebapp.service
+systemctl start mywebapp.service
 
 
 echo "Налаштування Nginx..."
-cat <<EOF > /etc/nginx/sites-available/webapp
+cat <<EOF > /etc/nginx/sites-available/mywebapp
 server {
     listen 80;
     server_name _;
@@ -87,7 +86,7 @@ server {
 }
 EOF
 
-ln -s /etc/nginx/sites-available/webapp /etc/nginx/sites-enabled/
+ln -s /etc/nginx/sites-available/mywebapp /etc/nginx/sites-enabled/
 rm -f /etc/nginx/sites-enabled/default
 systemctl restart nginx
 
