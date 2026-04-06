@@ -1,36 +1,15 @@
 {
-  "name": "notes-service",
+  "name": "mywebapp",
   "version": "1.0.0",
-  "description": "notes service for do some notes",
-  "homepage": "https://github.com/vitkovskiiy/notes-service#readme",
-  "bugs": {
-    "url": "https://github.com/vitkovskiiy/notes-service/issues"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/vitkovskiiy/notes-service.git"
-  },
-  "license": "MIT",
-  "author": "Vitkvoskiiy Ivan",
+  "main": "server.js",
   "scripts": {
-    "start": "nodemon server.js"
+    "start": "node server.js"
   },
   "dependencies": {
-    "@prisma/adapter-pg": "^7.5.0",
-    "@prisma/client": "^6.19.2",
-    "dotenv": "^17.3.1",
-    "express": "^5.2.1",
-    "nodemon": "^3.1.14",
-    "pg": "^8.20.0"
+    "@prisma/client": "^5.0.0",
+    "express": "^4.18.2"
   },
   "devDependencies": {
-    "@eslint/js": "^10.0.1",
-    "@types/node": "^25.5.0",
-    "@types/pg": "^8.18.0",
-    "eslint": "^10.0.3",
-    "globals": "^17.4.0",
-    "prisma": "^6.19.2",
-    "tsx": "^4.21.0",
-    "typescript": "^5.9.3"
+    "prisma": "^5.0.0"
   }
 }

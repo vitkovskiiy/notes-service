@@ -18,16 +18,15 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.post("/:id/done", async (req, res) => {
-  try {
-    const updateStatus = await prisma.task.update({
-      where: { id: parseInt(req.params.id) },
-      data: { status: "DONE" },
-    });
-    res.status(200).send(updateStatus);
-  } catch (e) {
-    res.status(404).json({ message: e})
-  }
+router.get('/notes', async (req, res) => {
+    const notes = await prisma.note.findMany({ select: { id: true, title: true } });
+    
+    if (req.accepts('html')) {
+        const rows = notes.map(n => `<tr><td>${n.id}</td><td>${n.title}</td></tr>`).join('');
+        res.send(generateHtml('Notes', `<table border="1"><tr><th>ID</th><th>Title</th></tr>${rows}</table>`));
+    } else {
+        res.json(notes);
+    }
 });
 
 router.post("/", async (req, res) => {

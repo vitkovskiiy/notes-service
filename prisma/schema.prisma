@@ -7,17 +7,9 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Task {
-  id        Int        @id @default(autoincrement())
-  createdAt DateTime   @default(now())
-  title     String     @db.VarChar(255)
-  content   String?
-  status    TaskStatus @default(TODO)
-}
-
-enum TaskStatus {
-  DONE
-  TODO
-  ACTIVE
-  PENDING
+model Note {
+  id         Int      @id @default(autoincrement())
+  title      String
+  content    String
+  created_at DateTime @default(now())
 }
