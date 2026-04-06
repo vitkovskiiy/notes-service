@@ -2,6 +2,16 @@ const router = require("express").Router();
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
+const generateHtml = (title, body) => `
+<!DOCTYPE html>
+<html>
+<head><title>${title}</title></head>
+<body>${body}</body>
+</html>
+`;
+
+
+
 router.get("/", async (req, res) => {
   
   try {

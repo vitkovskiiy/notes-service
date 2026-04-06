@@ -56,7 +56,7 @@ APP_DIR="/var/www/mywebapp"
 mkdir -p $APP_DIR
 
 # ТУТ ВАЖЛИВО: Замініть URL на ваш репозиторій з файлами Notes Service!
-# git clone "https://github.com/ВАШ_ЛОГІН/mywebapp.git" /tmp/repo
+# git clone "https://github.com/vitkovskiiy/mywebapp.git" /tmp/repo
 # cp -r /tmp/repo/* $APP_DIR/
 # rm -rf /tmp/repo
 

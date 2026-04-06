@@ -7,14 +7,7 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Допоміжна функція для генерації простого HTML
-const generateHtml = (title, body) => `
-<!DOCTYPE html>
-<html>
-<head><title>${title}</title></head>
-<body>${body}</body>
-</html>
-`;
+
 
 // Кореневий ендпоінт
 app.get('/', (req, res) => {
