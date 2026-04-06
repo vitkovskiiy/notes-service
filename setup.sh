@@ -55,13 +55,10 @@ echo "6. Завантаження коду застосунку..."
 APP_DIR="/var/www/mywebapp"
 mkdir -p $APP_DIR
 
-# ТУТ ВАЖЛИВО: Замініть URL на ваш репозиторій з файлами Notes Service!
-# git clone "https://github.com/vitkovskiiy/mywebapp.git" /tmp/repo
-# cp -r /tmp/repo/* $APP_DIR/
-# rm -rf /tmp/repo
-
-# Для тестування можна просто скопіювати файли з поточної папки, якщо вони є:
-cp -r ./* $APP_DIR/ 2>/dev/null || true
+# Клонуємо ВАШ репозиторій напряму
+git clone "https://github.com/vitkovskiiy/notes-service.git" /tmp/repo
+cp -r /tmp/repo/* $APP_DIR/
+rm -rf /tmp/repo
 
 cd $APP_DIR
 npm install
@@ -139,6 +136,7 @@ DEFAULT_USER=$(id -nu 1000 2>/dev/null)
 if [ -n "$DEFAULT_USER" ]; then
     usermod -L "$DEFAULT_USER"
     usermod -s /usr/sbin/nologin "$DEFAULT_USER"
+    echo "Користувач $DEFAULT_USER заблокований."
 fi
 
-echo "=== Готово! ==="
+echo "=== Готово! Сервіс успішно розгорнуто. ==="
