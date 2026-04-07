@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  database:
+    image: postgres:15-alpine
+    container_name: notes_db
+    restart: always
+    environment:
+      POSTGRES_USER: prisma
+      POSTGRES_PASSWORD: prismapassword
+      POSTGRES_DB: notes_db
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - notes_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U prisma -d notes_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build: 
+      context: .
+    container_name: notes_web
+    restart: always
+    environment:
+      - DATABASE_URL=postgresql://prisma:prismapassword@database:5432/notes_db?schema=public
+      - PORT=8000
+    depends_on:
+      database:
+        condition: service_healthy
+    networks:
+      - notes_network
+    command: sh -c "npx prisma db push && npm start"
+
+  nginx:
+    image: nginx:alpine
+    container_name: notes_nginx
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - web
+    networks:
+      - notes_network
+
+networks:
+  notes_network:
+    driver: bridge
+
+
+volumes:
+  pgdata:
