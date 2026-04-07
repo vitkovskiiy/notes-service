@@ -9,7 +9,10 @@ echo "=== Початок налаштування сервера (Варіант
 
 echo "1. Встановлення пакетів..."
 apt-get update
-apt-get install -y nginx nodejs npm postgresql git openssl
+apt-get install -y ca-certificates curl gnupg
+# Встановлюємо сучасну версію Node.js (v20), бо стандартна v12 занадто стара для Prisma
+curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+apt-get install -y nginx nodejs postgresql git openssl
 
 echo "2. Створення користувачів..."
 ENCRYPTED_PASS=$(openssl passwd -6 12345678)
@@ -28,7 +31,7 @@ chage -d 0 student
 chage -d 0 teacher
 chage -d 0 operator
 
-# Системний користувач mywebapp (згідно ТЗ)
+# Системний користувач mywebapp
 id -u mywebapp &>/dev/null || useradd -r -s /usr/sbin/nologin mywebapp
 
 echo "3. Налаштування sudo для operator..."
@@ -44,6 +47,7 @@ chown student:student /home/student/gradebook
 chmod 644 /home/student/gradebook
 
 echo "5. Налаштування PostgreSQL..."
+cd /tmp # Переходимо в /tmp, щоб postgres не лаявся на Permission denied
 sudo -u postgres psql -c "DROP DATABASE IF EXISTS mywebapp;" 2>/dev/null
 sudo -u postgres psql -c "CREATE DATABASE mywebapp;"
 sudo -u postgres psql -tc "SELECT 1 FROM pg_roles WHERE rolname='student_db'" | grep -q 1 || \
@@ -55,13 +59,10 @@ echo "6. Завантаження коду застосунку..."
 APP_DIR="/var/www/mywebapp"
 mkdir -p $APP_DIR
 
-# ТУТ ВАЖЛИВО: Замініть URL на ваш репозиторій з файлами Notes Service!
-# git clone "https://github.com/ВАШ_ЛОГІН/mywebapp.git" /tmp/repo
-# cp -r /tmp/repo/* $APP_DIR/
-# rm -rf /tmp/repo
-
-# Для тестування можна просто скопіювати файли з поточної папки, якщо вони є:
-cp -r ./* $APP_DIR/ 2>/dev/null || true
+# Клонуємо репозиторій напряму
+git clone "https://github.com/vitkovskiiy/notes-service.git" /tmp/repo
+cp -r /tmp/repo/* $APP_DIR/
+rm -rf /tmp/repo
 
 cd $APP_DIR
 npm install
@@ -139,6 +140,7 @@ DEFAULT_USER=$(id -nu 1000 2>/dev/null)
 if [ -n "$DEFAULT_USER" ]; then
     usermod -L "$DEFAULT_USER"
     usermod -s /usr/sbin/nologin "$DEFAULT_USER"
+    echo "Користувач $DEFAULT_USER заблокований."
 fi
 
-echo "=== Готово! ==="
+echo "=== Готово! Сервіс успішно розгорнуто. ==="

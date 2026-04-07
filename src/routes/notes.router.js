@@ -1,21 +1,25 @@
 const router = require("express").Router();
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
+const generateHtml = require("../../server")
 
-router.get("/", async (req, res) => {
-  
-  try {
-    const acceptHeader = req.headers.accept || '';
-    const response = await prisma.task.findMany();
-    if(acceptHeader.includes('text/html')){
-       const parsed = response.map(task =>`${task.title} (ID: ${task.id})`);
-       return res.status(200).send(`Your, tasks \n${parsed}`);
+router.get('/notes/:id', async (req, res) => {
+    const note = await prisma.note.findUnique({ where: { id: parseInt(req.params.id) } });
+    
+    if (!note) return res.status(404).send('Note not found');
+    
+    if (req.accepts('html')) {
+        const details = `
+        <table border="1">
+            <tr><th>ID</th><td>${note.id}</td></tr>
+            <tr><th>Title</th><td>${note.title}</td></tr>
+            <tr><th>Created At</th><td>${note.created_at}</td></tr>
+            <tr><th>Content</th><td>${note.content}</td></tr>
+        </table>`;
+        res.send(generateHtml('Note Details', details));
     } else {
-       return res.status(200).send(response);
+        res.json(note);
     }
-  } catch (e) {
-    res.status(404).json({ message: e });
-  }
 });
 
 router.get('/notes', async (req, res) => {
@@ -29,18 +33,10 @@ router.get('/notes', async (req, res) => {
     }
 });
 
-router.post("/", async (req, res) => {
-  try {
-    const response = await prisma.task.create({
-      data: {
-        title: req.body.titleTask,
-        content: req.body.contentTask,
-      },
-    });
-    res.status(200).send(response);
-  } catch (e) {
-    res.status(404).json({ message: e})
-  }
+router.post('/notes', async (req, res) => {
+    const { title, content } = req.body;
+    const note = await prisma.note.create({ data: { title, content } });
+    res.status(201).json(note);
 });
 
 module.exports = router;
