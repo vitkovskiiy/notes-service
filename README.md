@@ -1,8 +1,8 @@
-# Автоматизоване розгортання Notes Service (Варіант 3)
+#Notes Service (Варіант 3)
 
-Цей проєкт налаштовує веб-застосунок (Node.js), базу даних (PostgreSQL) та reverse-proxy (Nginx) на чистій віртуальній машині Ubuntu за допомогою єдиного bash-скрипта.
+Цей проєкт налаштовує веб-застосунок, базу даних та reverse-proxy на чистій віртуальній машині Ubuntu за допомогою єдиного bash-скрипта.
 
-## 🚀 Інструкція з розгортання (для перевірки)
+## 🚀 Інструкція з розгортання
 
 **Вимоги до середовища:**
 * Чиста віртуальна машина з ОС **Ubuntu Server 22.04 / 24.04**.
@@ -15,4 +15,62 @@
 ```bash
 wget [https://raw.githubusercontent.com/vitkovskiiy/notes-service/main/setup.sh](https://raw.githubusercontent.com/vitkovskiiy/notes-service/main/setup.sh) -O setup.sh && chmod +x setup.sh && sudo ./setup.sh
 ```
-### Крок 2.
+Дочекайтеся завершення роботи скрипта. У кінці має з'явитися повідомлення: === Готово! Сервіс успішно розгорнуто. ===
+
+### Крок 2. 
+🔍 Перевірка працездатності
+
+Після успішного розгортання ви можете перевірити роботу системи за допомогою наступних кроків.
+
+##1. Перевірка роботи веб-застосунку (через Nginx)
+
+Застосунок доступний на стандартному 80-му порту.
+
+#Перевірка Health-статусу:
+```bash
+
+curl http://localhost/health/alive
+# Очікувана відповідь: OK
+
+curl http://localhost/health/ready
+# Очікувана відповідь: OK
+```
+
+##Створення та отримання нотаток:
+# Створити тестову нотатку
+```bash
+curl -X POST -H "Content-Type: application/json" -d '{"title":"Test Note","content":"This is a test"}' http://localhost/notes
+
+# Отримати список усіх нотаток
+curl -H "Accept: application/json" http://localhost/notes
+```
+
+2. Перевірка створення користувачів та файлу оцінювання
+
+Перевіримо наявність файлу gradebook у домашній директорії студента:
+```bash
+
+cat /home/student/gradebook
+# Очікуваний вивід: 3
+```
+3. Перевірка обмежених прав (operator)
+
+Зайдіть під створеним operator (пароль за замовчуванням: 12345678). Система попросить змінити пароль при першому вході:
+```bash
+
+su - operator
+```
+Перевірте, що оператор має право керувати сервісом mywebapp та nginx без введення пароля:
+```Bash
+
+sudo systemctl status mywebapp.service
+sudo systemctl restart mywebapp.service
+sudo systemctl reload nginx
+```
+Спроба виконати будь-яку іншу привілейовану команду (наприклад, читання логів) буде відхилена системою безпеки:
+```Bash
+
+sudo journalctl -u mywebapp.service # Буде відхилено
+```
+Примітка: Під час виконання скрипта дефолтний юзер системи (наприклад, vagrant(я робив через нього) або ubuntu) блокується згідно з вимогами безпеки. Подальше адміністрування ВМ має виконуватися через новостворених юзерiв(student, teacher).
+
