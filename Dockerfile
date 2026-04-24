@@ -1,9 +1,8 @@
 FROM node:20-alpine
-WORKDIR /app
+WORKDIR /usr/src/app
 COPY package*.json ./
-COPY prisma ./prisma/
-RUN npm install
+RUN npm ci --only=production
 COPY . .
 RUN npx prisma generate
 EXPOSE 8000
-CMD ["npm", "start"]
+CMD [ "npm", "start" ]
