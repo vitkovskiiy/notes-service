@@ -9,7 +9,7 @@ jobs:
   deploy:
     name: Deploy to Target Node
     runs-on: self-hosted
-    needs: []  
+    needs: []
 
     environment: production
 
@@ -92,3 +92,4 @@ jobs:
               -o StrictHostKeyChecking=no \
               "${TARGET_USER}@${TARGET_HOST}" \
               "bash /tmp/verify.sh"
+              
