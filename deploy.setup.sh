@@ -3,12 +3,12 @@
 apt-get update
 apt-get install -y docker.io nginx postgresql
 
-# Налаштування БД
+
 sudo -u postgres psql -c "CREATE DATABASE mywebapp;" || true
 sudo -u postgres psql -c "CREATE USER student_db WITH PASSWORD 'db_password';" || true
 sudo -u postgres psql -c "ALTER DATABASE mywebapp OWNER TO student_db;" || true
 
-# Systemd Unit для Docker-контейнера
+
 cat <<EOF > /etc/systemd/system/mywebapp-container.service
 [Unit]
 Description=MyWebApp Docker Container
