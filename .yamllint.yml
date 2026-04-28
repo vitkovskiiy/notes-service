@@ -1,4 +1,3 @@
----
 extends: default
 
 rules:
@@ -7,9 +6,13 @@ rules:
     level: warning
   truthy:
     allowed-values: ["true", "false"]
+    check-keys: false
+  document-start: disable
+
   comments:
     min-spaces-from-content: 1
+    
   braces:
-    forbid: false
+    level: warning
   brackets:
-    forbid: false
+    level: warning
