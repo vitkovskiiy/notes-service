@@ -31,12 +31,14 @@ app.get("/", (req, res) => {
 app.use("/notes", notesRouter);
 app.use("/health", healthRouter);
 
-const port = process.env.PORT || 8000;
+port = 8000;
+let server;
 
 if (process.env.LISTEN_FDS && parseInt(process.env.LISTEN_FDS) > 0) {
-  
-  app.listen({ fd: 3 }, () => console.log("Listening on systemd socket"));
+  server = app.listen({ fd: 3 }, () => console.log("Listening on systemd socket"));
 } else {
-  
-  app.listen(port, () => console.log(`Listening on port ${port}`));
+  server = app.listen(port, () => console.log(`Listening on port ${port}`));
 }
+
+
+module.exports = {server,app};

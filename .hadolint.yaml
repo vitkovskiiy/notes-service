@@ -1,0 +1,5 @@
+---
+failure-threshold: warning
+ignore:
+  - DL3008  # pin apt-get versions — acceptable for dev
+  - DL3009  # delete apt lists — handled in multi-stage
