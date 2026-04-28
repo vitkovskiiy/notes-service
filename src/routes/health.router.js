@@ -9,6 +9,7 @@ router.get("/ready", async (req, res) => {
     await prisma.$queryRaw`SELECT 1`;
     res.status(200).send("OK");
   } catch (error) {
+    console.log(error)
     res.status(500).send("Database connection failed");
   }
 });
