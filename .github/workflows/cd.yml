@@ -9,7 +9,7 @@ jobs:
   deploy:
     name: Deploy to Target Node
     runs-on: self-hosted
-    needs: []  
+    needs: []
 
     environment: production
 
@@ -99,7 +99,7 @@ jobs:
           echo "::error::Deployment verification FAILED for tag ${{ github.ref_name }}"
           # Optional: send Telegram notification
           if [ -n "${{ secrets.TELEGRAM_BOT_TOKEN }}" ]; then
-            curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
-              -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
-              -d text="❌ Deployment verification FAILED%0ATag: ${{ github.ref_name }}%0ARepo: ${{ github.repository }}%0ARun: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            URL="https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage"
+            TEXT="❌ Deployment FAILED%0ATag: ${{ github.ref_name }}%0ARun: ${{ github.server_url }}/${{ github.run_id }}"
+            curl -s -X POST "$URL" -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" -d text="$TEXT"
           fi
