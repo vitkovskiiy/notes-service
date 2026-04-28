@@ -4,7 +4,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "lint": "eslint . --ext .js --max-warnings 0",
+    "lint": "eslint . --max-warnings 0",
     "test": "jest --forceExit",
     "test:coverage": "jest --coverage --forceExit",
     "test:ci": "jest --coverage --forceExit --ci"
