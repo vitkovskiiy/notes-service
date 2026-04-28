@@ -31,7 +31,7 @@ app.get("/", (req, res) => {
 app.use("/notes", notesRouter);
 app.use("/health", healthRouter);
 
-port = 8000;
+const port = 8000;
 let server;
 
 if (process.env.LISTEN_FDS && parseInt(process.env.LISTEN_FDS) > 0) {
