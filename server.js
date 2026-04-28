@@ -41,4 +41,4 @@ if (process.env.LISTEN_FDS && parseInt(process.env.LISTEN_FDS) > 0) {
 }
 
 
-module.exports = server;
+module.exports = {server,app};

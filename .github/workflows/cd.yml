@@ -1,0 +1,105 @@
+name: CD
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  deploy:
+    name: Deploy to Target Node
+    runs-on: self-hosted
+    needs: []  
+
+    environment: production
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set image tag
+        id: image
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          IMAGE="ghcr.io/${{ github.repository }}:${TAG}"
+          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
+          echo "image=${IMAGE}" >> "$GITHUB_OUTPUT"
+
+      - name: Deploy to target node via SSH
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.TARGET_SSH_KEY }}
+          TARGET_HOST: ${{ secrets.TARGET_HOST }}
+          TARGET_USER: ${{ secrets.TARGET_USER }}
+          IMAGE: ${{ steps.image.outputs.image }}
+          TAG: ${{ steps.image.outputs.tag }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GHCR_USER: ${{ github.actor }}
+        run: |
+          # Write SSH key
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+
+          # Add target to known hosts
+          ssh-keyscan -H "$TARGET_HOST" >> ~/.ssh/known_hosts
+
+          # Copy deploy script to target
+          scp -i ~/.ssh/deploy_key \
+              -o StrictHostKeyChecking=no \
+              deploy.sh \
+              notes-service.service \
+              "${TARGET_USER}@${TARGET_HOST}:/tmp/"
+
+          # Execute deploy on target node
+          ssh -i ~/.ssh/deploy_key \
+              -o StrictHostKeyChecking=no \
+              "${TARGET_USER}@${TARGET_HOST}" \
+              "IMAGE='${IMAGE}' \
+               TAG='${TAG}' \
+               DATABASE_URL='${DATABASE_URL}' \
+               GHCR_TOKEN='${GHCR_TOKEN}' \
+               GHCR_USER='${GHCR_USER}' \
+               bash /tmp/deploy.sh"
+
+  verify:
+    name: Verify Deployment
+    runs-on: self-hosted
+    needs: deploy
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run verification script
+        env:
+          TARGET_HOST: ${{ secrets.TARGET_HOST }}
+          TARGET_USER: ${{ secrets.TARGET_USER }}
+          SSH_PRIVATE_KEY: ${{ secrets.TARGET_SSH_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H "$TARGET_HOST" >> ~/.ssh/known_hosts
+
+          # Copy and run verify script on target node
+          scp -i ~/.ssh/deploy_key \
+              -o StrictHostKeyChecking=no \
+              verify.sh \
+              "${TARGET_USER}@${TARGET_HOST}:/tmp/"
+
+          ssh -i ~/.ssh/deploy_key \
+              -o StrictHostKeyChecking=no \
+              "${TARGET_USER}@${TARGET_HOST}" \
+              "bash /tmp/verify.sh"
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "::error::Deployment verification FAILED for tag ${{ github.ref_name }}"
+          # Optional: send Telegram notification
+          if [ -n "${{ secrets.TELEGRAM_BOT_TOKEN }}" ]; then
+            curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+              -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
+              -d text="❌ Deployment verification FAILED%0ATag: ${{ github.ref_name }}%0ARepo: ${{ github.repository }}%0ARun: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          fi
