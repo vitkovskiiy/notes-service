@@ -37,7 +37,7 @@ jobs:
         uses: ludeeus/action-shellcheck@2.0.0
         with:
           scandir: "."
-          pattern: "*.sh"
+          ignore_paths: "node_modules"
 
       - name: Lint YAML files
         run: |
