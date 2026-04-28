@@ -47,7 +47,7 @@ chown student:student /home/student/gradebook
 chmod 644 /home/student/gradebook
 
 echo "5. Налаштування PostgreSQL..."
-cd /tmp # Переходимо в /tmp, щоб postgres не лаявся на Permission denied
+cd /tmp || exit 1
 sudo -u postgres psql -c "DROP DATABASE IF EXISTS mywebapp;" 2>/dev/null
 sudo -u postgres psql -c "CREATE DATABASE mywebapp;"
 sudo -u postgres psql -tc "SELECT 1 FROM pg_roles WHERE rolname='student_db'" | grep -q 1 || \
@@ -64,7 +64,7 @@ git clone "https://github.com/vitkovskiiy/notes-service.git" /tmp/repo
 cp -r /tmp/repo/* $APP_DIR/
 rm -rf /tmp/repo
 
-cd $APP_DIR
+cd $APP_DIR || exit 1
 npm install
 
 chown -R mywebapp:mywebapp $APP_DIR

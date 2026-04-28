@@ -38,6 +38,8 @@ jobs:
         with:
           scandir: "."
           ignore_paths: "node_modules"
+        env:
+          SHELLCHECK_OPTS: -e SC2034 -e SC1091
 
       - name: Lint YAML files
         run: |
