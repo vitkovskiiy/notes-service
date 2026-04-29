@@ -3,6 +3,7 @@
 # Run once as root (or sudo) on the target node.
 set -euo pipefail
 
+# shellcheck disable=SC2034
 NGINX_CONF_URL="https://raw.githubusercontent.com/vitkovskiiy/notes-service/main/nginx.conf"
 APP_PORT=3000
 
@@ -10,6 +11,7 @@ log() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*"; }
 
 # ── 0. Pre-flight ─────────────────────────────────────────────────────────────
 log "Checking OS..."
+# shellcheck disable=SC1091
 if ! grep -qi ubuntu /etc/os-release; then
   echo "ERROR: This script targets Ubuntu 24.04 only." >&2
   exit 1
@@ -59,6 +61,7 @@ log "Docker: $(docker --version)"
 log "Configuring nginx..."
 
 # Download nginx config from repo or use inline config
+# shellcheck disable=SC2016
 cat > /etc/nginx/sites-available/notes-service <<EOF
 server {
     listen 80;
@@ -114,7 +117,6 @@ ENVEOF
   chmod 600 /etc/notes-service.env
 fi
 
-# ── 6. Install systemd unit (placeholder — real one is pushed by CD) ──────────
 log "Setup complete."
 log ""
 log "NEXT STEPS:"

@@ -38,6 +38,7 @@ jobs:
         with:
           scandir: "."
           pattern: "*.sh"
+          ignore_paths: node_modules
 
       - name: Lint YAML files
         run: |
