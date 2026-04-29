@@ -1,4 +1,5 @@
 FROM node:20-bookworm-slim
+# hadolint ignore=DL3008
 RUN apt-get update -y && \
     apt-get install -y --no-install-recommends \
     openssl \
