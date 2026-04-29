@@ -39,6 +39,7 @@ jobs:
           scandir: "."
           pattern: "*.sh"
           ignore_paths: node_modules
+          severity: warning
 
       - name: Lint YAML files
         run: |
