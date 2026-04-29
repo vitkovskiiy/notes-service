@@ -88,9 +88,7 @@ jobs:
         env:
           DATABASE_URL: postgresql://notes_user:notes_password@localhost:5432/notes_test
           NODE_ENV: test
-        run: |
-          npx prisma db push 
-          npm run test:coverage
+        run: npm run test:coverage
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v4
