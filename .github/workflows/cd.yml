@@ -92,4 +92,3 @@ jobs:
               -o StrictHostKeyChecking=no \
               "${TARGET_USER}@${TARGET_HOST}" \
               "bash /tmp/verify.sh"
-              
