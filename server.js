@@ -3,6 +3,8 @@ const notesRouter = require("./src/routes/notes.router");
 const healthRouter = require("./src/routes/health.router");
 
 const app = express();
+const port = 8000;
+
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -31,14 +33,13 @@ app.get("/", (req, res) => {
 app.use("/notes", notesRouter);
 app.use("/health", healthRouter);
 
-const port = 8000;
-let server;
 
-if (process.env.LISTEN_FDS && parseInt(process.env.LISTEN_FDS) > 0) {
-  server = app.listen({ fd: 3 }, () => console.log("Listening on systemd socket"));
-} else {
-  server = app.listen(port, () => console.log(`Listening on port ${port}`));
+
+if (require.main === module) {
+  app.listen(port, () => {
+    console.log(`Listening on port ${port}`);
+  });
 }
 
+module.exports = app;
 
-module.exports = {server,app};

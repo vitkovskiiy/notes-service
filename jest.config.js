@@ -10,7 +10,7 @@ const config = {
     "!**/node_modules/**",
     "!**/tests/**",
   ],
-  coverageThresholds: {
+  coverageThreshold: {
     global: {
       lines: 40,
       functions: 40,
@@ -20,7 +20,7 @@ const config = {
   },
   coverageReporters: ["text", "lcov", "html"],
   // Give each test file a clean DB state by using transactions or mocks
-  setupFilesAfterFramework: [],
+  setupFilesAfterEnv: [],
   testTimeout: 15000,
 };
 
