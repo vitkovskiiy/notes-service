@@ -2,15 +2,14 @@
 const config = {
   testEnvironment: "node",
   testMatch: ["**/tests/**/*.test.js"],
-  collectCoverage: false, // enabled via --coverage flag in npm script
-  coverageDirectory: "coverage",
   collectCoverageFrom: [
-    "src/**/*.js",
     "server.js",
+    "src/**/*.js",
     "!**/node_modules/**",
     "!**/tests/**",
+    "!**/prisma/**",
   ],
-  coverageThreshold: {
+  coverageThresholds: {
     global: {
       lines: 40,
       functions: 40,
@@ -19,8 +18,6 @@ const config = {
     },
   },
   coverageReporters: ["text", "lcov", "html"],
-  // Give each test file a clean DB state by using transactions or mocks
-  setupFilesAfterEnv: [],
   testTimeout: 15000,
 };
 
