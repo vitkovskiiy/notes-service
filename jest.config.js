@@ -9,7 +9,7 @@ const config = {
     "!**/tests/**",
     "!**/prisma/**",
   ],
-  coverageThresholds: {
+  coverageThreshold: {
     global: {
       lines: 40,
       functions: 40,

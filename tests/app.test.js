@@ -1,8 +1,6 @@
 const request = require("supertest");
 const app = require("../server");
 
-// ── Health endpoints ──────────────────────────────────────────────────────────
-
 describe("Health endpoints", () => {
   it("GET /health/alive → 200", async () => {
     const res = await request(app)
@@ -19,8 +17,6 @@ describe("Health endpoints", () => {
   });
 });
 
-// ── Root endpoint ─────────────────────────────────────────────────────────────
-
 describe("Root endpoint", () => {
   it("GET / with Accept: text/html → 200 HTML page", async () => {
     const res = await request(app).get("/").set("Accept", "text/html");
@@ -34,12 +30,10 @@ describe("Root endpoint", () => {
   });
 });
 
-// ── Notes CRUD ────────────────────────────────────────────────────────────────
-
 describe("Notes API", () => {
   let createdId;
 
-  // POST /notes
+
   describe("POST /notes", () => {
     it("creates a note and returns 201 with JSON body", async () => {
       const res = await request(app)
@@ -64,7 +58,6 @@ describe("Notes API", () => {
     });
   });
 
-  // GET /notes
   describe("GET /notes", () => {
     it("returns 200 and a JSON array", async () => {
       const res = await request(app)
@@ -90,7 +83,6 @@ describe("Notes API", () => {
     });
   });
 
-  // GET /notes/:id
   describe("GET /notes/:id", () => {
     it("returns 200 JSON for existing note", async () => {
       if (!createdId) return;
@@ -117,5 +109,9 @@ describe("Notes API", () => {
         .set("Accept", "application/json");
       expect(res.statusCode).toEqual(404);
     });
+  });
+  
+  afterAll(async () => {
+    await prisma.$disconnect();
   });
 });
