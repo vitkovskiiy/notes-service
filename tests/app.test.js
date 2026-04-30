@@ -1,5 +1,7 @@
 const request = require("supertest");
 const app = require("../server");
+const { PrismaClient } = require("@prisma/client");
+const prisma = new PrismaClient();
 
 describe("Health endpoints", () => {
   it("GET /health/alive → 200", async () => {
