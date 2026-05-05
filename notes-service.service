@@ -10,7 +10,7 @@ TimeoutStartSec=0
 ExecStartPre=-/usr/bin/docker stop notes-app
 ExecStartPre=-/usr/bin/docker rm notes-app
 ExecStart=/usr/bin/docker run --name notes-app \
-  -p 3000:3000 \
+  -p 3000:8000 \
   --env-file /etc/notes-service.env \
   ghcr.io/vitkovskiiy/notes-service:stable
 
