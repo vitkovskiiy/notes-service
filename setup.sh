@@ -10,7 +10,6 @@ echo "=== Початок налаштування сервера (Варіант
 echo "1. Встановлення пакетів..."
 apt-get update
 apt-get install -y ca-certificates curl gnupg
-# Встановлюємо сучасну версію Node.js (v20), бо стандартна v12 занадто стара для Prisma
 curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
 apt-get install -y nginx nodejs postgresql git openssl
 
@@ -26,7 +25,6 @@ id -u operator &>/dev/null || useradd -m -s /bin/bash -p "$ENCRYPTED_PASS" -g op
 usermod -aG sudo student
 usermod -aG sudo teacher
 
-# Вимога: зміна пароля при першому вході
 chage -d 0 student
 chage -d 0 teacher
 chage -d 0 operator

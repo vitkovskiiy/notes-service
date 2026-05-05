@@ -1,0 +1,18 @@
+[Unit]
+Description=Notes Service Container
+After=docker.service
+Requires=docker.service
+
+[Service]
+Restart=always
+TimeoutStartSec=0
+# Важливо: використовуємо змінні або стабільний тег
+ExecStartPre=-/usr/bin/docker stop notes-app
+ExecStartPre=-/usr/bin/docker rm notes-app
+ExecStart=/usr/bin/docker run --name notes-app \
+  -p 3000:3000 \
+  --env-file /etc/notes-service.env \
+  ghcr.io/vitkovskiiy/notes-service:stable
+
+[Install]
+WantedBy=multi-user.target

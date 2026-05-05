@@ -5,5 +5,5 @@
 /.vscode
 /.vagrant
 /src/generated/prisma
-
+.idea
 /src/generated/prisma
