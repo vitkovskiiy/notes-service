@@ -27,7 +27,7 @@ DATABASE_URL=${DATABASE_URL}
 NODE_ENV=production
 PORT=3000
 EOF
-sudo chmod 600 "${ENV_FILE}"
+sudo chmod 644 "${ENV_FILE}"
 
 # ── 4. Install / update systemd unit ──────────────────────────────────────────
 log "Installing systemd unit..."

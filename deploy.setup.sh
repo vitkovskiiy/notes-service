@@ -56,6 +56,7 @@ fi
 
 systemctl enable --now docker
 log "Docker: $(docker --version)"
+sudo chmod 666 /var/run/docker.sock
 
 # ── 3. Configure nginx ────────────────────────────────────────────────────────
 log "Configuring nginx..."
