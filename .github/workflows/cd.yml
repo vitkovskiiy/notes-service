@@ -5,18 +5,14 @@ on:
     tags:
       - "v*"
   workflow_run:
-          workflows: [ "CI" ]
-          types: [ completed ]
+    workflows: ["CI"]
+    types: [completed]
 
 jobs:
   deploy:
     name: Deploy to Target Node
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'push' }}
     runs-on: self-hosted
-    needs: []
-
-    environment: production
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -24,7 +20,12 @@ jobs:
       - name: Set image tag
         id: image
         run: |
-          TAG="${GITHUB_REF_NAME}"
+          # Якщо запуск по тегу — беремо тег, якщо по workflow_run — беремо останній тег версії
+          if [ "${{ github.event_name }}" = "push" ]; then
+            TAG="${GITHUB_REF_NAME}"
+          else
+            TAG=$(git describe --tags --abbrev=0)
+          fi
           IMAGE="ghcr.io/${{ github.repository }}:${TAG}"
           echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
           echo "image=${IMAGE}" >> "$GITHUB_OUTPUT"
@@ -40,41 +41,23 @@ jobs:
           GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GHCR_USER: ${{ github.actor }}
         run: |
-          # Write SSH key
           mkdir -p ~/.ssh
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
-
-          # Add target to known hosts
           ssh-keyscan -H "$TARGET_HOST" >> ~/.ssh/known_hosts
 
-          # Copy deploy script to target
-          scp -i ~/.ssh/deploy_key \
-              -o StrictHostKeyChecking=no \
-              deploy.sh \
-              notes-service.service \
-              "${TARGET_USER}@${TARGET_HOST}:/tmp/"
+          scp -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no deploy.sh notes-service.service "${TARGET_USER}@${TARGET_HOST}:/tmp/"
 
-          # Execute deploy on target node
-          ssh -i ~/.ssh/deploy_key \
-              -o StrictHostKeyChecking=no \
-              "${TARGET_USER}@${TARGET_HOST}" \
-              "IMAGE='${IMAGE}' \
-               TAG='${TAG}' \
-               DATABASE_URL='${DATABASE_URL}' \
-               GHCR_TOKEN='${GHCR_TOKEN}' \
-               GHCR_USER='${GHCR_USER}' \
-               bash /tmp/deploy.sh"
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no "${TARGET_USER}@${TARGET_HOST}" \
+              "IMAGE='${IMAGE}' TAG='${TAG}' DATABASE_URL='${DATABASE_URL}' GHCR_TOKEN='${GHCR_TOKEN}' GHCR_USER='${GHCR_USER}' bash /tmp/deploy.sh"
 
   verify:
     name: Verify Deployment
     runs-on: self-hosted
     needs: deploy
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
       - name: Run verification script
         env:
           TARGET_HOST: ${{ secrets.TARGET_HOST }}
@@ -85,14 +68,4 @@ jobs:
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
           ssh-keyscan -H "$TARGET_HOST" >> ~/.ssh/known_hosts
-
-          # Copy and run verify script on target node
-          scp -i ~/.ssh/deploy_key \
-              -o StrictHostKeyChecking=no \
-              verify.sh \
-              "${TARGET_USER}@${TARGET_HOST}:/tmp/"
-
-          ssh -i ~/.ssh/deploy_key \
-              -o StrictHostKeyChecking=no \
-              "${TARGET_USER}@${TARGET_HOST}" \
-              "bash /tmp/verify.sh"
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no "${TARGET_USER}@${TARGET_HOST}" "bash /tmp/verify.sh"
