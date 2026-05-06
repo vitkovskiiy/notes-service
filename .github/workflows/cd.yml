@@ -16,11 +16,12 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Потрібно для пошуку тегів через git describe
 
       - name: Set image tag
         id: image
         run: |
-          # Якщо запуск по тегу — беремо тег, якщо по workflow_run — беремо останній тег версії
           if [ "${{ github.event_name }}" = "push" ]; then
             TAG="${GITHUB_REF_NAME}"
           else
@@ -46,8 +47,10 @@ jobs:
           chmod 600 ~/.ssh/deploy_key
           ssh-keyscan -H "$TARGET_HOST" >> ~/.ssh/known_hosts
 
+          # Копіюємо необхідні файли
           scp -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no deploy.sh notes-service.service "${TARGET_USER}@${TARGET_HOST}:/tmp/"
 
+          # Запуск деплою
           ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no "${TARGET_USER}@${TARGET_HOST}" \
               "IMAGE='${IMAGE}' TAG='${TAG}' DATABASE_URL='${DATABASE_URL}' GHCR_TOKEN='${GHCR_TOKEN}' GHCR_USER='${GHCR_USER}' bash /tmp/deploy.sh"
 
@@ -58,6 +61,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
       - name: Run verification script
         env:
           TARGET_HOST: ${{ secrets.TARGET_HOST }}
@@ -68,4 +72,9 @@ jobs:
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
           ssh-keyscan -H "$TARGET_HOST" >> ~/.ssh/known_hosts
+
+          
+          scp -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no verify.sh "${TARGET_USER}@${TARGET_HOST}:/tmp/"
+
+          
           ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no "${TARGET_USER}@${TARGET_HOST}" "bash /tmp/verify.sh"
