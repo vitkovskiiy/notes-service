@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-SERVICE_NAME="notes-service"
+
 ENV_FILE="/etc/notes-service.env"
 
 
