@@ -70,7 +70,7 @@ fi
 section "3. Nginx Configuration"
 # ══════════════════════════════════════════════════════════════════════════════
 
-if nginx -t 2>/dev/null; then
+if sudo nginx -t 2>/dev/null; then
   pass "nginx configuration syntax is valid"
 else
   fail "nginx configuration has errors"
