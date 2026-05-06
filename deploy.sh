@@ -3,7 +3,7 @@ set -euo pipefail
 
 SERVICE_NAME="notes-service"
 ENV_FILE="/etc/notes-service.env"
-UNIT_NAME="notes-service.service"
+
 
 
 log() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*"; }
@@ -31,13 +31,10 @@ sudo chmod 644 "${ENV_FILE}"
 
 
 log "Installing systemd unit..."
-if [ -f "/tmp/${UNIT_NAME}" ]; then
-    sudo cp "/tmp/${UNIT_NAME}" "/etc/systemd/system/${UNIT_NAME}"
-    sudo systemctl daemon-reload
-else
-    log "ERROR: /tmp/${UNIT_NAME} not found!"
-    exit 1
-fi
+sudo sed "s|\${IMAGE}|${IMAGE}|g" notes-service.service | sudo tee /etc/systemd/system/notes-service.service > /dev/null
+
+sudo systemctl daemon-reload
+sudo systemctl enable notes-service
 
 # ── 5. Run Prisma migrations ───────────────────────────────────────────────────
 log "Running database migrations..."

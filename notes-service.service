@@ -10,7 +10,7 @@ ExecStartPre=-/usr/bin/docker rm notes-service
 ExecStart=/usr/bin/docker run --name notes-service \
   -p 127.0.0.1:3000:8000 \
   --env-file /etc/notes-service.env \
-  ghcr.io/vitkovskiiy/notes-service:stable
+  ${IMAGE}
 
 [Install]
 WantedBy=multi-user.target
