@@ -1,12 +1,11 @@
 #!/usr/bin/env bash
-# deploy.sh — runs ON the target node via SSH from the self-hosted runner.
-# Required env vars: IMAGE, TAG, DATABASE_URL, GHCR_TOKEN, GHCR_USER
 set -euo pipefail
 
 APP_NAME="notes-service"
-SERVICE_NAME="${APP_NAME}.service"
 SYSTEMD_DIR="/etc/systemd/system"
-ENV_FILE="/etc/${APP_NAME}.env"
+SERVICE_NAME="notes-service"
+ENV_FILE="/etc/notes-service.env"
+UNIT_FILE="/etc/systemd/system/notes-service.service"
 
 log() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*"; }
 
@@ -39,12 +38,12 @@ log "Running database migrations..."
 docker run --rm \
   --env-file "${ENV_FILE}" \
   "${IMAGE}" \
-  npx prisma migrate deploy
+  npx prisma db push
 
 # ── 6. Restart service ────────────────────────────────────────────────────────
-log "Restarting ${SERVICE_NAME}..."
-sudo systemctl enable "${SERVICE_NAME}"
-sudo systemctl restart "${SERVICE_NAME}"
+sudo systemctl daemon-reload
+sudo systemctl enable notes-service
+sudo systemctl restart notes-service
 
 # ── 7. Wait for service to be healthy ─────────────────────────────────────────
 log "Waiting for service to become healthy..."

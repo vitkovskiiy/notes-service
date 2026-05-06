@@ -6,6 +6,9 @@ set -euo pipefail
 # shellcheck disable=SC2034
 NGINX_CONF_URL="https://raw.githubusercontent.com/vitkovskiiy/notes-service/main/nginx.conf"
 APP_PORT=3000
+SERVICE_NAME="notes-service"
+ENV_FILE="/etc/notes-service.env"
+UNIT_FILE="/etc/systemd/system/notes-service.service"
 
 log() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*"; }
 
@@ -96,14 +99,32 @@ systemctl reload nginx
 log "nginx configured and running"
 
 # ── 4. Firewall ────────────────────────────────────────────────────────────────
-log "Configuring UFW firewall..."
+log "Configuring UFW..."
 ufw --force reset
 ufw default deny incoming
 ufw default allow outgoing
 ufw allow ssh
 ufw allow http
+ufw allow from 172.17.0.0/16 to any port 5432
 ufw --force enable
-log "UFW enabled"
+
+# ── 5. Nginx ──────────────────────────────────────────────────────────────────
+log "Configuring Nginx..."
+cat > /etc/nginx/sites-available/notes-service <<EOF
+server {
+    listen 80;
+    server_name _;
+    location / {
+        proxy_pass http://127.0.0.1:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+    }
+}
+EOF
+ln -sf /etc/nginx/sites-available/notes-service /etc/nginx/sites-enabled/
+rm -f /etc/nginx/sites-enabled/default
+systemctl restart nginx
 
 # ── 5. Create environment file placeholder ────────────────────────────────────
 if [ ! -f /etc/notes-service.env ]; then
