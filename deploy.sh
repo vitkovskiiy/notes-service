@@ -29,7 +29,7 @@ sudo chmod 644 "${ENV_FILE}"
 
 # ── 4. Install / update systemd unit ──────────────────────────────────────────
 log "Installing systemd unit..."
-sudo cp /tmp/${SERVICE_NAME} "${SYSTEMD_DIR}/${SERVICE_NAME}"
+sudo cp /tmp/notes-service.service /etc/systemd/system/notes-service.service
 sudo systemctl daemon-reload
 
 # ── 5. Run Prisma migrations ───────────────────────────────────────────────────
