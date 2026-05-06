@@ -72,9 +72,5 @@ jobs:
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
           ssh-keyscan -H "$TARGET_HOST" >> ~/.ssh/known_hosts
-
-          
           scp -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no verify.sh "${TARGET_USER}@${TARGET_HOST}:/tmp/"
-
-          
           ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no "${TARGET_USER}@${TARGET_HOST}" "bash /tmp/verify.sh"
