@@ -6,9 +6,6 @@ set -euo pipefail
 # shellcheck disable=SC2034
 NGINX_CONF_URL="https://raw.githubusercontent.com/vitkovskiiy/notes-service/main/nginx.conf"
 APP_PORT=3000
-SERVICE_NAME="notes-service"
-ENV_FILE="/etc/notes-service.env"
-UNIT_FILE="/etc/systemd/system/notes-service.service"
 
 log() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*"; }
 

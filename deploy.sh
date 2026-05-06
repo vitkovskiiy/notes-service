@@ -1,11 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-APP_NAME="notes-service"
 SYSTEMD_DIR="/etc/systemd/system"
 SERVICE_NAME="notes-service"
 ENV_FILE="/etc/notes-service.env"
-UNIT_FILE="/etc/systemd/system/notes-service.service"
+
 
 log() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*"; }
 
