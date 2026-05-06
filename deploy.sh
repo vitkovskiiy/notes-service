@@ -31,7 +31,8 @@ sudo chmod 644 "${ENV_FILE}"
 
 
 log "Installing systemd unit..."
-sudo sed "s|\${IMAGE}|${IMAGE}|g" notes-service.service | sudo tee /etc/systemd/system/notes-service.service > /dev/null
+# Додаємо шлях /tmp/ перед назвою файлу
+sudo sed "s|\${IMAGE}|${IMAGE}|g" /tmp/notes-service.service | sudo tee /etc/systemd/system/notes-service.service > /dev/null
 
 sudo systemctl daemon-reload
 sudo systemctl enable notes-service
