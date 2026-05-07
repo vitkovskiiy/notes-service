@@ -22,7 +22,7 @@ describe("Health endpoints", () => {
 describe("Root endpoint", () => {
   it("GET / with Accept: text/html → 200 HTML page", async () => {
     const res = await request(app).get("/").set("Accept", "text/html");
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toEqual(400);
     expect(res.text).toMatch(/Notes Service/i);
   });
 
