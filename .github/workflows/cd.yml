@@ -25,7 +25,7 @@ jobs:
           if [ "${{ github.event_name }}" = "push" ]; then
             TAG="${GITHUB_REF_NAME}"
           else
-            TAG=$(git describe --tags --abbrev=0)
+            TAG=$(git tag -l "v*" --sort=-v:refname | head -n 1)
           fi
           IMAGE="ghcr.io/${{ github.repository }}:${TAG}"
           echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
@@ -61,6 +61,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: '0'
 
       - name: Run verification script
         env:
