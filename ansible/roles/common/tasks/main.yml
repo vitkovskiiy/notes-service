@@ -1,0 +1,20 @@
+---
+- name: Create student user
+  user:
+    name: student
+    shell: /bin/bash
+
+- name: Ensure teacher user exists
+  user:
+    name: teacher
+    password: "=4096.randomM6SIdY7O6E.8l5v8U4W3n7E8I5H8k8.Z7fF1v3U/8j1u0i8M0e9v9g7X1l9a.u2z2l3I4l5l6m7n8o9p0"
+    groups: sudo
+    shell: /bin/bash
+
+- name: Create gradebook file
+  copy:
+    content: "3\n"
+    dest: /home/student/gradebook
+    owner: student
+    group: student
+    mode: '0644'
