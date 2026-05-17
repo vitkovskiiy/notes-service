@@ -1,0 +1,45 @@
+---
+- name: Install PostgreSQL and dependencies
+  apt:
+    name: [postgresql, python3-psycopg2, acl]
+    state: present
+    update_cache: yes
+
+- name: Find PostgreSQL config path
+  shell: find /etc/postgresql -name postgresql.conf
+  register: pg_conf_path
+  changed_when: false
+
+- name: Find pg_hba.conf path
+  shell: find /etc/postgresql -name pg_hba.conf
+  register: pg_hba_path
+  changed_when: false
+
+- name: Allow remote connections
+  lineinfile:
+    path: "{{ pg_conf_path.stdout }}"
+    regexp: "^#listen_addresses ="
+    line: "listen_addresses = '*'"
+  notify: restart postgres
+
+- name: Allow worker node in pg_hba.conf
+  lineinfile:
+    path: "{{ pg_hba_path.stdout }}"
+    line: "host all all 192.168.252.8/32 md5"
+  notify: restart postgres
+
+- name: Create database 'notes_db'
+  shell: sudo -u postgres psql -c "CREATE DATABASE notes_db;"
+  register: db_res
+  failed_when: db_res.rc != 0 and 'already exists' not in db_res.stderr
+  changed_when: "'already exists' not in db_res.stderr"
+
+- name: Create database user 'admin'
+  shell: sudo -u postgres psql -c "CREATE USER admin WITH PASSWORD 'password123';"
+  register: user_res
+  failed_when: user_res.rc != 0 and 'already exists' not in user_res.stderr
+  changed_when: "'already exists' not in user_res.stderr"
+
+- name: Grant privileges
+  shell: sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE notes_db TO admin;"
+  changed_when: false

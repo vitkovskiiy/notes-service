@@ -1,0 +1,16 @@
+#cloud-config
+users:
+  - name: ansible
+    groups: sudo
+    shell: /bin/bash
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    ssh_authorized_keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDJALer9xrdamxWQitqiZuq2SBA6vzo6hVq7sy4YQCZKx5Kyk/mWIa5c/c6a0HdBWV8/YPOKE/G5bk8hsiKTGLBVdRRkB+z24qbO+iEfB4MzlZQqSPuzrP2hxwGZQzPtGbccoc5Fl8pn7YLFID+jHzZ5RGBnPx9glPjLUZjAqX2S+SCoZfRPbWKUd/qmkZHN4ENRrC0lgsuuVSj+w2ZwSY3nJGjJu/JeA2kyga4c7KusxuwXPi2mq6iuA9KQHLCCo9txhUpHALK447H2mxVEuv8/ED+yQhhWAI3IieUcJJXWIquTWEcClox4RvhilUzGRr5ooS48o/79QGp2MU6XmbApOiiVz8zF4mPzEDr2dEDbCi8i67S69Z7fHyVBjeXG1pYNzYzIbX1pGpcDlZrreB5I+Cr1OZnHXu7RNAjoXzDXy8MmdAz6pKnYPRcUxM4Oq0I/75FWxCcRIKBMTV7EJgRkPmuW77309z2JFu+31lzUWaarjEUOpPaT2MEe382Z579tCBbosgdCJk1LqiLoS3zkrBijrf/zh7UaUyweeTKiDeMK58PhkVe3UXnjA7hBD/+wPqUEcMEAwODkyGX+k1Jo1YLMMQKynC3AEfPkDQjBX5pTbb7pM40xu89tfhe1u/+Q6mNzU5iNsF747wqfV735nuF75awM+QdyGjHN268Yw== itssayzy@Ivans-MacBook-Air.local
+  - name: teacher
+    groups: sudo
+    shell: /bin/bash
+    lock_passwd: false
+    passwd: "$6$rounds=4096$util.random$6M6SIdY7O6E.8l5v8U4W3n7E8I5H8k8.Z7fF1v3U/8j1u0i8M0e9v9g7X1l9a.u2z2l3I4l5l6m7n8o9p0"
+    sudo: ['ALL=(ALL) ALL']
+packages:
+  - python3

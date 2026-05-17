@@ -1,0 +1,62 @@
+---
+- name: Install Node.js and npm
+  apt:
+    name: [nodejs, npm]
+    state: present
+
+- name: Create app directory
+  file:
+    path: /opt/notes-service
+    state: directory
+    owner: ansible
+    mode: '0755'
+
+- name: Copy application source
+  copy:
+    src: ../src
+    dest: /opt/notes-service/
+    owner: ansible
+
+- name: Copy prisma directory
+  copy:
+    src: ../prisma
+    dest: /opt/notes-service
+    owner: ansible
+
+- name: Copy root files
+  copy:
+    src: "../{{ item }}"
+    dest: "/opt/notes-service/{{ item }}"
+    owner: ansible
+  loop:
+    - package.json
+    - server.js
+
+- name: Force port 3000 in server.js
+  replace:
+    path: /opt/notes-service/server.js
+    regexp: '8000'
+    replace: '3000'
+
+- name: Install dependencies
+  npm:
+    path: /opt/notes-service
+
+- name: Generate Prisma Client
+  shell: "npx prisma generate"
+  args:
+    chdir: /opt/notes-service
+
+- name: Stop any existing node processes
+  shell: "killall node || true"
+  changed_when: false
+
+- name: Start the Node.js app
+  shell: "nohup node server.js > app.log 2>&1 &"
+  args:
+    chdir: /opt/notes-service
+  async: 10
+  poll: 0
+  environment:
+    DATABASE_URL: "postgresql://admin:password123@192.168.252.9:5432/notes_db"
+    PORT: "3000"
